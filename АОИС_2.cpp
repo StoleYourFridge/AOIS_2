@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <vector>
 #include <cmath>
+#include <stack>
 
 using namespace std;
 
@@ -75,16 +76,49 @@ void numeral(vector<vector<bool>> term)
 	cout << ");" << endl;
 }
 
-pair<vector<vector<bool>>, vector<vector<bool>>> transformator()
+bool encode(string reverse, vector<bool>triple)
+{
+	stack<bool>result;
+	bool first, second;
+	for (int i = 0; i < reverse.size(); i++)
+	{
+		if (reverse[i] == 'a') result.push(triple[0]);
+		else if (reverse[i] == 'b') result.push(triple[1]);
+		else if (reverse[i] == 'c') result.push(triple[2]);
+		else if (reverse[i] == '!') {
+			first = result.top();
+			result.pop();
+			result.push(!first);
+		}
+		else if (reverse[i] == '+') {
+			first = result.top();
+			result.pop();
+			second = result.top();
+			result.pop();
+			result.push(summary(first, second));
+		}
+		else if (reverse[i] == '*') {
+			first = result.top();
+			result.pop();
+			second = result.top();
+			result.pop();
+			result.push(first * second);
+		}
+	}
+	return result.top();
+}
+
+void transformator()
 {
 	vector<vector<bool>> data { {0,0,0},{0,0,1},{0,1,0},{0,1,1},{1,0,0},{1,0,1},{1,1,0},{1,1,1} };
 	vector<vector<bool>> sdnfprototype;
 	vector<vector<bool>> sknfprototype;
 	vector<bool>number;
+	string func = "a!b!+a!c*!*!";
 	int index;
 	for (int i = 0; i < data.size(); i++)
 	{
-		if (function(data[i])) {
+		if (encode(func, data[i])) {
 			sdnfprototype.push_back(data[i]);
 			number.push_back(1);
 		}
@@ -101,14 +135,12 @@ pair<vector<vector<bool>>, vector<vector<bool>>> transformator()
 	numeral(sdnfprototype);
 	cout << "F(" << index << ")(a,b,c) = A";
 	numeral(sknfprototype);
-	pair<vector<vector<bool>>, vector<vector<bool>>> result(sdnfprototype, sknfprototype);
-	return result;
 }
+
+
 
 int main()
 {
-	/*sdnf(transformator().first);
-	cout << endl << endl << "----------------" << endl << endl;
-	sknf(transformator().second);*/
 	transformator();
+	//cout << encode("a!b!+a!c*!*!", { 0,0,0 }) << endl;
 }
