@@ -64,12 +64,24 @@ int translate(vector<bool> term)
 	return result;
 }
 
+void numeral(vector<vector<bool>> term)
+{
+	cout << "(";
+	for (int i = 0; i < term.size(); i++)
+	{
+		cout << translate(term[i]);
+		if (i != term.size() - 1) cout << ",";
+	}
+	cout << ");" << endl;
+}
+
 pair<vector<vector<bool>>, vector<vector<bool>>> transformator()
 {
 	vector<vector<bool>> data { {0,0,0},{0,0,1},{0,1,0},{0,1,1},{1,0,0},{1,0,1},{1,1,0},{1,1,1} };
 	vector<vector<bool>> sdnfprototype;
 	vector<vector<bool>> sknfprototype;
 	vector<bool>number;
+	int index;
 	for (int i = 0; i < data.size(); i++)
 	{
 		if (function(data[i])) {
@@ -83,7 +95,12 @@ pair<vector<vector<bool>>, vector<vector<bool>>> transformator()
 	}
 	sdnf(sdnfprototype);
 	sknf(sknfprototype);
-
+	index = translate(number);
+	cout << "Index : " << index << endl;
+	cout << "F(" << index << ")(a,b,c) = V";
+	numeral(sdnfprototype);
+	cout << "F(" << index << ")(a,b,c) = A";
+	numeral(sknfprototype);
 	pair<vector<vector<bool>>, vector<vector<bool>>> result(sdnfprototype, sknfprototype);
 	return result;
 }
