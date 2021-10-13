@@ -1,93 +1,5 @@
 ﻿#include "АОИС_2.h"
 
-void deny_to_the_end(string& function)
-{
-	for (int i = 0; i < function.size(); i++)
-	{
-		if (function[i] == ' ') {
-			function.erase(function.begin() + i);
-			i--;
-		}
-	}
-	for (int i = 0; i < function.size(); i++)
-	{
-		if (function[i] == '!' && function[i + 1] == '(') {
-			function.erase(function.begin() + i);
-			stack<char>stack;
-			stack.push('(');
-			int index = i + 1;
-			while (stack.size() != 0)
-			{
-				if (function[index] == '(') stack.push('(');
-				else if (function[index] == ')') stack.pop();
-				index++;
-			}
-			function.insert(function.begin() + index, '!');
-		}
-		else if (function[i] == '!' && (function[i + 1] == 'a' || function[i + 1] == 'b' || function[i + 1] == 'c')) {
-			function.erase(function.begin() + i);
-			function.insert(function.begin() + i + 1, '!');
-		}
-	}
-}
-void translate(string& function)
-{
-	deny_to_the_end(function);
-	stack<char> stack;
-	string result;
-	for (int i = 0; i < function.size(); i++)
-	{
-		if (function[i] == 'a' || function[i] == 'b' || function[i] == 'c') {
-			result.push_back(function[i]);
-		}
-		else if (function[i] == '!') result.push_back('!');
-		else if (function[i] == ')') {
-			while (stack.top() != '(')
-			{
-				result.push_back(stack.top());
-				stack.pop();
-			}
-			stack.pop();
-			if (stack.size() != 0 && stack.top() == '*') {
-				if (function[i + 1] != '!') {
-					result.push_back('*');
-					stack.pop();
-				}
-				else {
-					result.push_back(function[i + 1]);
-					result.push_back('*');
-					stack.pop();
-					i++;
-				}
-			}
-		}
-		else if (function[i] == '*') {
-			if (function[i + 1] == 'a' || function[i + 1] == 'b' || function[i + 1] == 'c') {
-				if (function[i + 2] != '!') {
-					result.push_back(function[i + 1]);
-					result.push_back(function[i]);
-					i++;
-				}
-				else {
-					result.push_back(function[i + 1]);
-					result.push_back(function[i + 2]);
-					result.push_back(function[i]);
-					i += 2;
-				}
-			}
-			else stack.push(function[i]);
-				
-		}
-		else stack.push(function[i]);
-	}
-	while (!stack.empty())
-	{
-		result.push_back(stack.top());
-		stack.pop();
-	}
-	function = result;
-}
-
 int priority(char symbol)
 {
 	if (symbol == '!') return 4;
@@ -115,7 +27,7 @@ void translate(string& function)
 		}
 		else if (function[i] == '!') stack.push(function[i]);
 		else if (function[i] == '+' || function[i] == '*') {
-			while (priority(stack.top()) >= priority(function[i])) {
+			while (!stack.empty() && priority(stack.top()) >= priority(function[i])) {
 				result.push_back(stack.top());
 				stack.pop();
 			}
@@ -180,14 +92,12 @@ void sdnfprint(vector<vector<bool>>& sdnfprototype)
 	cout << "F(sdnf)(a,b,c) = ";
 	for (int i = 0; i < sdnfprototype.size(); i++)
 	{
-		cout << "(";
 		if (sdnfprototype[i][0]) cout << "a*";
 		else cout << "!a*";
 		if (sdnfprototype[i][1]) cout << "b*";
 		else cout << "!b*";
 		if (sdnfprototype[i][2]) cout << "c";
 		else cout << "!c";
-		cout << ")";
 		if (i != (sdnfprototype.size() - 1)) cout << " + ";
 		
 	}

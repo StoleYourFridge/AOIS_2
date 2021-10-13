@@ -2,5 +2,6 @@
 
 void main()
 {
-	tests();
+	our_own_input();
+	system("pause");
 }
