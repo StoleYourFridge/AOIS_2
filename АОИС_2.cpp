@@ -1,98 +1,4 @@
-﻿#include <iostream>
-#include <string>
-#include <vector>
-#include <cmath>
-#include <stack>
-
-using namespace std;
-
-void deny_to_the_end(string& function)
-{
-	for (int i = 0; i < function.size(); i++)
-	{
-		if (function[i] == ' ') {
-			function.erase(function.begin() + i);
-			i--;
-		}
-	}
-	for (int i = 0; i < function.size(); i++)
-	{
-		if (function[i] == '!' && function[i + 1] == '(') {
-			function.erase(function.begin() + i);
-			stack<char>stack;
-			stack.push('(');
-			int index = i + 1;
-			while (stack.size() != 0)
-			{
-				if (function[index] == '(') stack.push('(');
-				else if (function[index] == ')') stack.pop();
-				index++;
-			}
-			function.insert(function.begin() + index, '!');
-		}
-		else if (function[i] == '!' && (function[i + 1] == 'a' || function[i + 1] == 'b' || function[i + 1] == 'c')) {
-			function.erase(function.begin() + i);
-			function.insert(function.begin() + i + 1, '!');
-		}
-	}
-}
-void translate(string& function)
-{
-	deny_to_the_end(function);
-	stack<char> stack;
-	string result;
-	for (int i = 0; i < function.size(); i++)
-	{
-		if (function[i] == 'a' || function[i] == 'b' || function[i] == 'c') {
-			result.push_back(function[i]);
-		}
-		else if (function[i] == '!') result.push_back('!');
-		else if (function[i] == ')') {
-			while (stack.top() != '(')
-			{
-				result.push_back(stack.top());
-				stack.pop();
-			}
-			stack.pop();
-			if (stack.size() != 0 && stack.top() == '*') {
-				if (function[i + 1] != '!') {
-					result.push_back('*');
-					stack.pop();
-				}
-				else {
-					result.push_back(function[i + 1]);
-					result.push_back('*');
-					stack.pop();
-					i++;
-				}
-			}
-		}
-		else if (function[i] == '*') {
-			if (function[i + 1] == 'a' || function[i + 1] == 'b' || function[i + 1] == 'c') {
-				if (function[i + 2] != '!') {
-					result.push_back(function[i + 1]);
-					result.push_back(function[i]);
-					i++;
-				}
-				else {
-					result.push_back(function[i + 1]);
-					result.push_back(function[i + 2]);
-					result.push_back(function[i]);
-					i += 2;
-				}
-			}
-			else stack.push(function[i]);
-				
-		}
-		else stack.push(function[i]);
-	}
-	while (!stack.empty())
-	{
-		result.push_back(stack.top());
-		stack.pop();
-	}
-	function = result;
-}
+﻿#include "АОИС_2.h"
 
 int priority(char symbol)
 {
@@ -101,7 +7,7 @@ int priority(char symbol)
 	else if (symbol == '+') return 2;
 	return 1;
 }
-void translate2(string& function)
+void translate(string& function)
 {
 	string result;
 	stack<char>stack;
@@ -121,7 +27,7 @@ void translate2(string& function)
 		}
 		else if (function[i] == '!') stack.push(function[i]);
 		else if (function[i] == '+' || function[i] == '*') {
-			while (priority(stack.top()) >= priority(function[i])) {
+			while (!stack.empty() && priority(stack.top()) >= priority(function[i])) {
 				result.push_back(stack.top());
 				stack.pop();
 			}
@@ -134,7 +40,6 @@ void translate2(string& function)
 	}
 	function = result;
 }
-
 bool summary(bool first, bool  second)
 {
 	if (first && second) return true;
@@ -241,44 +146,13 @@ void sdnf_sknf_to_numeral(vector<vector<bool>>& prototype)
 	cout << ");" << endl;
 }
 
-class Result  
-{
-	vector<vector<bool>> sdnf;
-	vector<vector<bool>> sknf;
-	vector<bool>number;
-public:	
-	Result(vector<vector<bool>>sdnfprotatype, vector<vector<bool>>sknfprotatype, vector<bool>numberprotatype) : 
-		sdnf(sdnfprotatype), 
-		sknf(sknfprotatype),  
-		number(numberprotatype)
-	{}
-	void print()
-	{
-		truthtable(number);
-		sdnfprint(sdnf);
-		sknfprint(sknf);
-		int index = from_binary_to(number);
-		cout << "Index : " << index << endl;
-		cout << "F(" << index << ")(a,b,c) = V";
-		sdnf_sknf_to_numeral(sdnf);
-		cout << "F(" << index << ")(a,b,c) = A";
-		sdnf_sknf_to_numeral(sknf);
-	}
-	bool operator== (Result &example)
-	{
-		if (example.number != number) return false;
-		if (example.sdnf != sdnf) return false;
-		if (example.sknf != sknf) return false;
-		return true;
-	}
-};
 Result transformator(string& name)
 {
 	vector<vector<bool>> data { {0,0,0},{0,0,1},{0,1,0},{0,1,1},{1,0,0},{1,0,1},{1,1,0},{1,1,1} };
 	vector<vector<bool>> sdnfprototype;
 	vector<vector<bool>> sknfprototype;
 	vector<bool>number;
-	translate2(name);
+	translate(name);
 	int index;
 	for (int i = 0; i < data.size(); i++)
 	{
@@ -818,9 +692,4 @@ void our_own_input()
 	cout << "Enter your function : ";
 	getline(cin, functionname);
 	transformator(functionname).print();
-}
-
-int main()
-{
-	tests();
 }
