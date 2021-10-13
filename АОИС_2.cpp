@@ -93,6 +93,48 @@ void translate(string& function)
 	}
 	function = result;
 }
+
+int priority(char symbol)
+{
+	if (symbol == '!') return 4;
+	else if (symbol == '*') return 3;
+	else if (symbol == '+') return 2;
+	return 1;
+}
+void translate2(string& function)
+{
+	string result;
+	stack<char>stack;
+	for (int i = 0; i < function.size(); i++)
+	{
+		if (function[i] == 'a' || function[i] == 'b' || function[i] == 'c') {
+			result.push_back(function[i]);
+		}
+		else if (function[i] == '(') stack.push(function[i]);
+		else if (function[i] == ')') {
+			while (stack.top() != '(')
+			{
+				result.push_back(stack.top());
+				stack.pop();
+			}
+			stack.pop();
+		}
+		else if (function[i] == '!') stack.push(function[i]);
+		else if (function[i] == '+' || function[i] == '*') {
+			while (priority(stack.top()) >= priority(function[i])) {
+				result.push_back(stack.top());
+				stack.pop();
+			}
+			stack.push(function[i]);
+		}
+	}
+	while (!stack.empty()) {
+		result.push_back(stack.top());
+		stack.pop();
+	}
+	function = result;
+}
+
 bool summary(bool first, bool  second)
 {
 	if (first && second) return true;
@@ -236,7 +278,7 @@ Result transformator(string& name)
 	vector<vector<bool>> sdnfprototype;
 	vector<vector<bool>> sknfprototype;
 	vector<bool>number;
-	translate(name);
+	translate2(name);
 	int index;
 	for (int i = 0; i < data.size(); i++)
 	{
