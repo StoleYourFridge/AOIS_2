@@ -1,5 +1,44 @@
 ﻿#include "АОИС_2.h"
 
+bool checker(string& function)
+{
+	int counter = 0, i = 0;
+	while (!function.empty() && i < function.size())
+	{
+		if (function[i] == ' ') {
+			function.erase(function.begin() + i);
+			continue;
+		}
+		i++;
+	}
+	if (!function.size()) return false;
+	if (function[0] != 'a' && function[0] != 'b' && function[0] != 'c' && function[0] != '(' && function[0] != '!') return false;
+	for (int i = 0; i < function.size() - 1; i++)
+	{
+		if (function[i] == 'a' || function[i] == 'b' || function[i] == 'c') {
+			if (function[i + 1] != '*' && function[i + 1] != '+' && function[i + 1] != ')') return false;
+		}
+		else if (function[i] == '!') {
+			if (function[i + 1] != 'a' && function[i + 1] != 'b' && function[i + 1] != 'c' && function[i + 1] != '(') return false;
+		}
+		else if (function[i] == '*' && function[i] == '+') {
+			if (function[i + 1] != 'a' && function[i + 1] != 'b' && function[i + 1] != 'c' && function[i + 1] != '(' && function[i + 1] != '!') return false;
+		}
+		if (function[i] == '(') {
+			counter++;
+			if (function[i + 1] != 'a' && function[i + 1] != 'b' && function[i + 1] != 'c' && function[i + 1] != '!' && function[i + 1] != '(') return false;
+		}
+		else if (function[i] == ')') {
+			counter--;
+			if (function[i + 1] != '+' && function[i + 1] != '*' && function[i + 1] != ')') return false;
+		}
+	}
+	i = function.size() - 1;
+	if (function[i] != 'a' && function[i] != 'b' && function[i] != 'c' && function[i] != ')') return false;
+	if (function[i] == ')') counter--;
+	if (counter != 0) return false;
+	return true;
+}
 int priority(char symbol)
 {
 	if (symbol == '!') return 4;
@@ -688,9 +727,13 @@ int tests()
 }
 void our_own_input()
 {
-	string functionname;
-	cout << "Enter your function : ";
-	cin.ignore();
-	getline(cin, functionname);
-	transformator(functionname).print();
+		string functionname;
+		cout << "Enter your function : ";
+		cin.ignore();
+		getline(cin, functionname);
+		if (!checker(functionname)) {
+			cout << "Enter something possible to work with!" << endl;
+			return;
+		}
+		transformator(functionname).print();
 }

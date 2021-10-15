@@ -7,6 +7,7 @@
 
 using namespace std;
 
+bool checker(string& function);
 int priority(char symbol);
 void translate(string& function);
 bool summary(bool first, bool  second);
