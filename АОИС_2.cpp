@@ -690,6 +690,7 @@ void our_own_input()
 {
 	string functionname;
 	cout << "Enter your function : ";
+	cin.ignore();
 	getline(cin, functionname);
 	transformator(functionname).print();
 }
